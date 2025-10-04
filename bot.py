@@ -3,18 +3,22 @@ import discord
 import os
 from discord.ext import commands
 from dotenv import load_dotenv
+from groq import Groq   
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
-bot = commands.Bot(command_prefix='!', intents=intents)
 user_data = {}
 
+groq_client = Groq(api_key=os.getenv('GROQ_API_KEY'))
+
+bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
 async def on_ready():
     print(f'🚀 {bot.user} est en ligne! Ready to go!')
+    print(f'🔑 Groq API Key: {"✅ Configurée" if groq_client.api_key else "❌ Manquante"}')
     print('-------------------')
 
 
@@ -216,9 +220,29 @@ async def message(ctx, *, content, channel: discord.TextChannel = None):
     if channel is None:
         channel = ctx.channel
     await channel.send(content)
+    await ctx.message.delete()
+
+@bot.command(name='ask', aliases=['ia', 'groq'])
+async def ask_ai(ctx, *, question):
+    async with ctx.typing():
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant", 
+            messages=[
+                {"role": "system", "content": "Tu es un assistant sur Discord. Réponds de manière concise et amicale avec un air décontracté et jeune."},
+                {"role": "user", "content": question}
+            ],
+            max_tokens=1000,
+            temperature=0.7
+        )
+        answer = response.choices[0].message.content.strip()
+        if len(answer) > 1900:
+            chunks = [answer[i:i+1900] for i in range(0, len(answer), 1900)]
+            for chunk in chunks:
+                await ctx.send(chunk)
+        else:
+            await ctx.send(answer)
 
 if __name__ == '__main__':
-    load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
     
     if TOKEN:
