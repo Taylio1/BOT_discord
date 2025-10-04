@@ -211,6 +211,12 @@ async def banlist(ctx):
     except Exception as e:
         await ctx.send(f"❌ Erreur: {e}")
 
+@bot.command(name='message')
+async def message(ctx, *, content, channel: discord.TextChannel = None):
+    if channel is None:
+        channel = ctx.channel
+    await channel.send(content)
+
 if __name__ == '__main__':
     load_dotenv()
     TOKEN = os.getenv('DISCORD_TOKEN')
