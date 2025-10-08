@@ -17,8 +17,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f'🚀 {bot.user} est en ligne! Ready to go!')
-    print(f'🔑 Groq API Key: {"✅ Configurée" if groq_client.api_key else "❌ Manquante"}')
+    print(f'{bot.user} est en ligne! Ready to go!')
+    print(f'Groq API Key: {"Configurée" if groq_client.api_key else "Manquante"}')
     print('-------------------')
 
 
@@ -26,7 +26,7 @@ async def on_ready():
 async def on_member_join(member):
     channel = discord.utils.get(member.guild.text_channels, name='arrivage')
     if channel:
-        await channel.send(f'Yooo {member.mention}, bienvenue dans la team! 🔥')
+        await channel.send(f'Yooo {member.mention}, bienvenue dans la team!')
     
     role = discord.utils.get(member.guild.roles, name='LES BG')
     if role:
@@ -44,7 +44,7 @@ async def on_message(message):
         xp_needed = user_data[user_id]["level"] * 100
         if user_data[user_id]["xp"] >= xp_needed:
             user_data[user_id]["level"] += 1
-            await message.channel.send(f"🚀 GG {message.author.mention}! Level {user_data[user_id]['level']} 🎯")
+            await message.channel.send(f"GG {message.author.mention}! Level {user_data[user_id]['level']}")
     
     await bot.process_commands(message)
 
@@ -53,11 +53,11 @@ async def on_message(message):
 async def info(ctx):
     guild = ctx.guild
     await ctx.send(f"""
-🏠 **{guild.name}**
-👑 Boss: {guild.owner.mention}
-👥 On est {guild.member_count} bg ici!
-📅 Créé le {guild.created_at.strftime("%d/%m/%Y")}
-🎮 Serveur perso pour traîner entre potes
+**{guild.name}**
+Boss: {guild.owner.mention}
+On est {guild.member_count} bg ici!
+Créé le {guild.created_at.strftime("%d/%m/%Y")}
+Serveur perso pour traîner entre potes
     """)
 
 
@@ -69,9 +69,9 @@ async def level(ctx, member: discord.Member = None):
     user_id = str(member.id)
     if user_id in user_data:
         data = user_data[user_id]
-        await ctx.send(f"🎮 **{member.name}** - Level {data['level']} | {data['xp']} XP")
+        await ctx.send(f"**{member.name}** - Level {data['level']} | {data['xp']} XP")
     else:
-        await ctx.send(f"😴 {member.name} n'a pas encore parlé ici!")
+        await ctx.send(f"{member.name} n'a pas encore parlé ici!")
 
 
 @bot.command(name='role')
@@ -79,47 +79,47 @@ async def role(ctx, member: discord.Member, *, role_name: str):
     role = discord.utils.get(ctx.guild.roles, name=role_name)
     
     if not role:
-        await ctx.send(f"🤷‍♂️ J'ai pas trouvé le rôle '{role_name}'")
+        await ctx.send(f"J'ai pas trouvé le rôle '{role_name}'")
         return
     
     if role in member.roles:
         await member.remove_roles(role)
-        await ctx.send(f"🗑️ Rôle **{role.name}** retiré à {member.mention}")
+        await ctx.send(f"Rôle **{role.name}** retiré à {member.mention}")
     else:
         await member.add_roles(role)
-        await ctx.send(f"🎉 Rôle **{role.name}** donné à {member.mention}!")
+        await ctx.send(f"Rôle **{role.name}** donné à {member.mention}!")
 
 
 @bot.command(name='kick')
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason=None):
     if member == ctx.author:
-        await ctx.send("😂 Tu veux te kick toi-même? Malin!")
+        await ctx.send("Tu veux te kick toi-même? Malin!")
         return
     
     try:
         await member.kick(reason=reason)
-        await ctx.send(f"👢 {member.name} a pris la porte!")
+        await ctx.send(f"{member.name} a pris la porte!")
         if reason:
             await ctx.send(f"Raison: {reason}")
     except:
-        await ctx.send("😅 J'ai pas pu le virer, désolé!")
+        await ctx.send("J'ai pas pu le virer, désolé!")
 
 
 @bot.command(name='ban')
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason=None):
     if member == ctx.author:
-        await ctx.send("🙃 Tu veux te ban toi-même? Bizarre...")
+        await ctx.send("Tu veux te ban toi-même? Bizarre...")
         return
     
     try:
         await member.ban(reason=reason)
-        await ctx.send(f"🔨 {member.name} a été banni!")
+        await ctx.send(f"{member.name} a été banni!")
         if reason:
             await ctx.send(f"Raison: {reason}")
     except:
-        await ctx.send("😬 Impossible de le ban!")
+        await ctx.send("Impossible de le ban!")
 
 
 @bot.command(name='unban')
@@ -127,7 +127,7 @@ async def ban(ctx, member: discord.Member, *, reason=None):
 async def unban(ctx, *, member_name):
     try:
         if '#' not in member_name:
-            await ctx.send("🤔 Écris comme ça: `!unban nom#1234`")
+            await ctx.send("Écris comme ça: `!unban nom#1234`")
             return
         
         member_name_part, member_discriminator = member_name.split('#')
@@ -136,33 +136,60 @@ async def unban(ctx, *, member_name):
             user = ban_entry.user
             if user.name == member_name_part and user.discriminator == member_discriminator:
                 await ctx.guild.unban(user)
-                await ctx.send(f"🎉 {user.name} est de retour!")
+                await ctx.send(f"{user.name} est de retour!")
                 return
         
-        await ctx.send(f"🤷‍♂️ J'ai pas trouvé {member_name} dans les bannis")
+        await ctx.send(f"J'ai pas trouvé {member_name} dans les bannis")
     except:
-        await ctx.send("😵 Une erreur bizarre s'est produite...")
+        await ctx.send("Une erreur bizarre s'est produite...")
 
+@bot.command(name='avatar')
+async def avatar(ctx, member: discord.Member = None):
+    if not member:
+        member = ctx.author
+    
+    embed = discord.Embed(title=f"Avatar de {member.name}", color=discord.Color.blue())
+    embed.set_image(url=member.avatar.url)
+    await ctx.send(embed=embed)
+
+@bot.command(name='giveXP')
+@commands.has_permissions(manage_roles=True)
+async def give_xp(ctx, member: discord.Member, amount: int):
+    user_id = str(member.id)
+    if user_id not in user_data:
+        user_data[user_id] = {"xp": 0, "level": 1}
+    
+    user_data[user_id]["xp"] += amount
+    xp_needed = user_data[user_id]["level"] * 100
+    leveled_up = False
+    while user_data[user_id]["xp"] >= xp_needed:
+        user_data[user_id]["level"] += 1
+        leveled_up = True
+        xp_needed = user_data[user_id]["level"] * 100
+    
+    await ctx.send(f"{member.mention} a reçu {amount} XP!")
+    if leveled_up:
+        await ctx.send(f"GG {member.mention}! Level {user_data[user_id]['level']}")
 
 @bot.command(name='clear')
 @commands.has_permissions(manage_messages=True)
 async def clear(ctx, amount: int = 5):
     if amount > 50:
-        await ctx.send("🤔 Max 50 messages!")
+        await ctx.send("Max 50 messages!")
         return
 
     try:
         deleted = await ctx.channel.purge(limit=amount + 1)
-        await ctx.send(f"🧹 Hop! {len(deleted)-1} messages supprimés", delete_after=3)
+        await ctx.send(f"Hop! {len(deleted)-1} messages supprimés", delete_after=3)
     except:
-        await ctx.send("😵 J'ai foiré, désolé!")
+        await ctx.send("J'ai foiré, désolé!")
 
 
 @bot.command(name='mute')
 @commands.has_permissions(manage_roles=True)
 async def mute(ctx, member: discord.Member, duration: int = 300):
     if member == ctx.author:
-        await ctx.send("❌ Tu ne peux pas te muter toi-même!")
+        await ctx.send("Tu ne peux pas te muter toi-même!")
         return
 
     mute_role = discord.utils.get(ctx.guild.roles, name="Muted")
@@ -174,24 +201,24 @@ async def mute(ctx, member: discord.Member, duration: int = 300):
     try:
         await member.add_roles(mute_role)
         embed = discord.Embed(
-            title="� Membre muté",
+            title="Membre muté",
             description=f"{member.mention} a été muté pendant {duration} secondes",
             color=discord.Color.orange()
         )
-        embed.add_field(name="👮 Modérateur", value=ctx.author.mention, inline=True)
+        embed.add_field(name="Modérateur", value=ctx.author.mention, inline=True)
         await ctx.send(embed=embed)
         
         await asyncio.sleep(duration)
         await member.remove_roles(mute_role)
         
         embed = discord.Embed(
-            title="🔊 Membre démuté",
+            title="Membre démuté",
             description=f"{member.mention} peut de nouveau parler",
             color=discord.Color.green()
         )
         await ctx.send(embed=embed)
     except Exception as e:
-        await ctx.send(f"❌ Erreur: {e}")
+        await ctx.send(f"Erreur: {e}")
 
 @bot.command(name='banlist')
 @commands.has_permissions(ban_members=True)
@@ -202,18 +229,18 @@ async def banlist(ctx):
             bans.append(ban_entry)
         
         if not bans:
-            await ctx.send("😌 Aucun membre banni.")
+            await ctx.send("Aucun membre banni.")
             return
         
         ban_list = "\n".join([f"{ban_entry.user.name}#{ban_entry.user.discriminator}" for ban_entry in bans])
         embed = discord.Embed(
-            title="📜 Liste des bannis",
+            title="Liste des bannis",
             description=ban_list,
             color=discord.Color.red()
         )
         await ctx.send(embed=embed)
     except Exception as e:
-        await ctx.send(f"❌ Erreur: {e}")
+        await ctx.send(f"Erreur: {e}")
 
 @bot.command(name='message')
 async def message(ctx, *, content, channel: discord.TextChannel = None):
@@ -228,19 +255,14 @@ async def ask_ai(ctx, *, question):
         response = groq_client.chat.completions.create(
             model="llama-3.1-8b-instant", 
             messages=[
-                {"role": "system", "content": "Tu es un assistant sur Discord. Réponds de manière concise et amicale avec un air décontracté et jeune."},
+                {"role": "system", "content": "Tu es un assistant sur Discord. Réponds de manière concise et méchante avec un air décontracté et jeune."},
                 {"role": "user", "content": question}
             ],
             max_tokens=1000,
             temperature=0.7
         )
         answer = response.choices[0].message.content.strip()
-        if len(answer) > 1900:
-            chunks = [answer[i:i+1900] for i in range(0, len(answer), 1900)]
-            for chunk in chunks:
-                await ctx.send(chunk)
-        else:
-            await ctx.send(answer)
+        await ctx.send(answer)
 
 if __name__ == '__main__':
     TOKEN = os.getenv('DISCORD_TOKEN')
@@ -248,4 +270,4 @@ if __name__ == '__main__':
     if TOKEN:
         bot.run(TOKEN)
     else:
-        print("❌ TOKEN non trouvé! Vérifie ton fichier .env")
+        print("TOKEN non trouvé! Vérifie ton fichier .env")
